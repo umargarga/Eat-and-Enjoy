@@ -29,3 +29,6 @@ $api->post('/restaurant', function(Request $request) use ($app) {
         return new Response(null, 201, ['Location' => '/v1/restapi/'.$id]);
     }
 });
+
+
+{"title":"KFC","address":"Liverpool","description":"Lorem ipsum","type":"restaurant"}

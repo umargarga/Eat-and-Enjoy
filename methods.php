@@ -1,57 +1,72 @@
 
-
-
-class RestaurantAdapter extends ArrayAdapter {
-    List list = new ArrayList();
-    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-    public RestaurantAdapter(Context context, int resource) {
-        super(context, resource);
-    }
+class HttpTask extends AsyncTask<Void, Void, String> {
+        String httpUrl;
+        ProgressDialog progressDialog;
     
-    public void add(Company object) {
-        super.add(object);
-        list.add(object);
-    }
+        @Override
+        protected void onPreExecute() {
+            httpUrl = "";
 
-    @Override
-    public int getCount() {
-        return list.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return list.get(position);
-    }
-    
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        RestaurantHolder restaurantHolder = new RestaurantHolder();
-        if(convertView==null) {
-            convertView = inflater.inflate(R.layout.list_item_view, null);
-            
-            restaurantHolder.title = (TextView) convertView.findViewById(R.id.titleView);
-            restaurantHolder.address = (TextView) convertView.findViewById(R.id.addressView);
-            restaurantHolder.type = (TextView) convertView.findViewById(R.id.typeView);
-            restaurantHolder.rating = (RatingBar) convertView.findViewById(R.id.ratingBar);
-            
-            convertView.setTag(restaurantHolder);
+            progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait");
+            progressDialog.setCancelable(false);
         }
-        Restaurant restaurant = new Restaurant();
 
-        restaurantHolder.title.setText(restaurant.getTitle());
-        restaurantHolder.type.setText(restaurant.getType());
-        restaurantHolder.address.setText(restaurant.getAddress());
-        restaurantHolder.rating.setRating(Float.parseFloat(restaurant.getAverageRating()));
+        @Override
+        protected String doInBackground(Void... voids) {
+            try {
+                URL url = new URL(httpUrl);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
+
+                InputStream inputStream = con.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder stringBuilder = new StringBuilder();
+                String result;
+                while ((result = bufferedReader.readLine())!=null)
+                {
+                    stringBuilder.append(result+"\n");
+                }
+                bufferedReader.close();
+                inputStream.close();
+                con.disconnect();
+                return stringBuilder.toString().trim();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
         
+        @Override
+        protected void onPostExecute(String result) {
+            Restaurant restaurant;
+                try {
+                    jsonObject = new JSONObject(result);
+                    jsonArray = jsonObject.getJSONArray("restaurant");
+                    int count = 0;
 
-        return convertView;
+                    String title;
+                    String address;
+                    String type;
+                    String rating;
+                    String id;
+    
+                    while(count<jsonArray.length())
+                    {
+                        JSONObject obj = jsonArray.getJSONObject(count);
+                        id = obj.getString("id");
+                        title = obj.getString("title");
+                        type = obj.getString("type");
+                        address = obj.getString("address");
+                        rating = obj.getString("rating");
+
+                        restaurant = new Restaurant(id, title, address, type, rating);
+                        restaurantAdapter.add(restaurant);
+                        count++;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+        }
+
     }
-}
-
-class RestaurantHolder{
-    public TextView title, address, type;
-    public RatingBar rating;
-}
-

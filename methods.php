@@ -1,6 +1,9 @@
 
-$api->get('/restaurant', function () use ($app) {
-    $sql = 'SELECT * FROM restaurant';
-    $restautant = $app['db']->fetchAll($sql);
-    return $app->json(array('restaurant' => $restaurant));
-});
+ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo != null && networkInfo.isConnected()){
+            new HttpTask().execute();
+        }else{
+            Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LENGTH).show();
+        }

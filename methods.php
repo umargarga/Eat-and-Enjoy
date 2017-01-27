@@ -1,99 +1,52 @@
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".RestaurantRegisterActivity">
 
-    <ScrollView
-        android:id="@+id/registration"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/register"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Title"
-                    android:inputType="text"
-                    android:maxLines="1" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <RadioGroup
-                android:id="@+id/radiogroup"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <RadioButton android:id="@+id/pub"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pub"/>
-                <RadioButton android:id="@+id/bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Bar"/>
-                <RadioButton android:id="@+id/restaurant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Restaurant"/>
-            </RadioGroup>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Description"
-                    android:inputType="text"
-                    android:maxLines="1" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="address"
-                    android:inputType="text"
-                    android:maxLines="1" />
-
-            </android.support.design.widget.TextInputLayout>
+public class HttpTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(getBaseContext(), "Company Registration Successful", Toast.LENGTH_LONG).show();
+            //Intent i = new Intent(RegisterActivthis, LoginActivity.class);
+            //startActivity(i);
+        }
 
 
-            <Button
-                android:id="@+id/register"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Register"
-                android:textStyle="bold" />
+        @Override
+        protected String doInBackground(String... params) {
+            URL url;
+            HttpURLConnection connection;
+            try {
+                url = new URL(params[0]);
+                connection = (HttpURLConnection) url.openConnection();
 
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                if (params[1].equals("POST")) {
+                    connection.setRequestMethod("POST");
+                    JSONObject data = new JSONObject();
+                    data.put("Users_ID", "1");
+                   
 
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setRequestProperty("Content-Type", "application/json");
+
+                    if (data != null) {
+                        DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+                        outputStream.writeBytes(data.toString());
+                        outputStream.flush();
+                        outputStream.close();
+                    }
+                    int responseCode = connection.getResponseCode();
+
+                }else{
+                    finish();
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }

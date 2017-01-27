@@ -1,4 +1,12 @@
 
+int selectedId = radioGroup.getCheckedRadioButtonId();
+                // find the radiobutton by returned id
+                radioButton = (RadioButton) findViewById(selectedId);
+                brandName = (EditText) findViewById(R.id.brand);
+
+                brand_name = brandName.getText().toString();
+                brand_category = radioButton.getText().toString();
+
 
 public class HttpTask extends AsyncTask<String, String, String> {
         @Override
